@@ -1,9 +1,10 @@
 import express from "express";
 import {ENV} from "./lib/env.js";
-
+import path from "path";
+// import cors from "cors";
 
 const app = express();
-
+const __dirname = path.resolve()    ;
 // middlewares
 // app.use(cors());
 // app.use(express.json());
@@ -12,15 +13,24 @@ const app = express();
 
 // health check
 app.get("/health", (req, res) => {
-  console.log("Health check endpoint called");
   res.status(200).json({
     msg: "welcome to interview-online backend",
     
   });
 });
 
-// port
-// const PORT = process.env.PORT || 5000;
+
+app.get("/books ", (req, res) => {
+  res.status(200).json({
+    msg: "welcome to books endpoint ",
+  });
+});
+if (ENV.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")))
+  
+  app.get("/{*any}", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend" ,"dist" ,"index.html"));
+  });}
 
 app.listen( ENV.PORT, () => {
   console.log(`✅ Server running on port ${ENV.PORT} 🚀`);
