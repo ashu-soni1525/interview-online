@@ -1,6 +1,7 @@
 import express from "express";
 import {ENV} from "./lib/env.js";
 import path from "path";
+import { connectDB } from "./lib/db.js";
 // import cors from "cors";
 
 const app = express();
@@ -16,7 +17,7 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     msg: "welcome to interview-online backend",
     
-  });
+  });    
 });
 
 
@@ -32,7 +33,17 @@ if (ENV.NODE_ENV === "production") {
     res.sendFile(path.join(__dirname, "../frontend" ,"dist" ,"index.html"));
   });}
 
-app.listen( ENV.PORT, () => {
-  console.log(`✅ Server running on port ${ENV.PORT} 🚀`);
-});
 
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(ENV.PORT, () => {
+      console.log(`✅ Server running on port ${ENV.PORT} 🚀`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
