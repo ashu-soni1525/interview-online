@@ -1,16 +1,20 @@
 import express from "express";
-import {ENV} from "./lib/env.js";
 import path from "path";
+import cors from "cors";
+import { serve } from "inngest/express";
+import {ENV} from "./lib/env.js";
 import { connectDB } from "./lib/db.js";
-// import cors from "cors";
-
+import { inngest } from "./lib/inngest.js";
 const app = express();
 const __dirname = path.resolve()    ;
+
 // middlewares
-// app.use(cors());
-// app.use(express.json());
+app.use(express.json());
+app.use(cors({origin:ENV.CLIENT_URL, credentials:true }));
 // app.use(express.urlencoded({ extended: true }));
 
+
+app.use("/api/inngest", serve({client: inngest, functions}));
 
 // health check
 app.get("/health", (req, res) => {
